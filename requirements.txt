@@ -1,0 +1,7 @@
+matplotlib==3.5.3
+networkx==2.5.1
+numpy==1.23.2
+peewee==3.15.1
+PyQt5==5.15.7
+scipy==1.9.0
+sympy==1.10.1
