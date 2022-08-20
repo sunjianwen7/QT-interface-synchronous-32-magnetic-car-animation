@@ -9,6 +9,7 @@ class Drama():
         self.main.Real_car_go(1,2)
     def TODO3(self):
         self.main.Real_car_go(2,3)
+        #TODO stop and run
     def TODO4(self):
         self.main.Real_car_go(3,4)
     def TODO5(self):
