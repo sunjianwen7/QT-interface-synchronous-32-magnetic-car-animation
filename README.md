@@ -3,6 +3,8 @@
 - If you want to use this project, please start it according to the following requirements：
   1. This project uses Ubuntu 18 and python 3.6
   2. Please install the function package according to the requirements.txt file
+- Software screenshot：
+- ![image](READ_me_Source/Software_screenshot.png)
 - This project still has functions that need to be improved. Welcome interested compatriots to upload according to the # todo.md file. Thank you very much
 
 - Embedded stm-32 car, machine learning path planning, Android Software Development and path smoothing will place another project. Welcome to track
