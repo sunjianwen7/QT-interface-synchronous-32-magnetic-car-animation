@@ -13,19 +13,24 @@ def sengmsg_tostr(msg_list):
 def release_port(port):
     "释放指定端口"
     # 查找端口对应的pid
-    cmd_find = 'netstat -apn |grep %s' % port
+    cmd_find = 'netstat -antup |grep %s' % port
     # 返回命令执行结果
     a=os.popen(cmd_find).read()
-    print(a)
-    result = a.split(' ')
-    if result and result[0] != '':
-        result0 = result[24]
-        cmd_kill = 'kill -9 %s' % result0
+    result0 = a.split(' ')
+    result=[]
+    for i in result0:
+        if i !='':
+            result.append(i)
+    pid=0
+    for i in result:
+        if i =='0.0.0.0:1234':
+            pid=int(result[result.index(i)+3].split('/')[0])
+            break
+    if pid!=0:
+        cmd_kill = 'kill -9 %s' % pid
         os.popen(cmd_kill)
-    else:
-        print('no port')
 def recode_bag(data_list):
-    txt = open('temp.txt', mode='w')
+    txt = open('5to3.txt', mode='w')
     txt.writelines(data_list)
     txt.close()
 
@@ -42,3 +47,5 @@ def str2float(s):
     chars = chars.split(".")
     num = reduce(point_left,map(chars2num,chars[0])) + reduce(point_right,list(map(chars2num,chars[1]))[::-1])*0.1
     return num
+if __name__ == '__main__':
+    release_port(1234)

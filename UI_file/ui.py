@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QtCore.QRect(47, 20, 131, 51))
         self.label.setObjectName("label")
         self.label_car = QtWidgets.QLabel(self.centralwidget)
-        self.label_car.setGeometry(QtCore.QRect(0, 0, 60, 42))
+        self.label_car.setGeometry(QtCore.QRect(723, 512, 60, 42))
         self.label_car.setPixmap(QPixmap("img_resource/2.jpeg"))
         self.label_car.setScaledContents(True)
         self.label_car.setObjectName("label_2")

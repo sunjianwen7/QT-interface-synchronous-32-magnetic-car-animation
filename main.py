@@ -22,14 +22,14 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
     m_singal = pyqtSignal(str)
     m_singal2 = pyqtSignal(str)
     def __init__(self):
-        self.amd=AMD_Map()
-        self.drama=Drama()
         super().__init__()
-        self.car_flag=False
-        self.rfid=6
-        self.local_path=[1]
+        self.amd=AMD_Map()
+        self.drama=Drama(self)
         self.record_flag=False
-        self.next_rfid=6
+        self.car_flag=False
+        self.rfid=1
+        self.local_path=[1]
+        self.next_rfid=1
         self.setMouseTracking(True)
         self.m_singal.connect(self.show_msg)
         self.m_singal2.connect(self.show_msg2)
@@ -38,16 +38,15 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
         self.status = self.statusBar()
         self.label_image.setPixmap(QPixmap("img_resource/1.jpg"))
         self.label_image.setScaledContents(True)
-        # release_port(1234)
+        release_port(1234)
         threading.Thread(target=self.socker_thread).start()
         threading.Thread(target=self.Virtual_car_go).start()
     def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:
         if event.buttons() == QtCore.Qt.LeftButton:
             event.ignore()
-            if self.car_flag:
-                self.Real_car_go(6,1)
-            else :
-                print('no')
+            self.rfid=4
+            self.next_rfid=5
+            self.car_flag=True
             return
     # def mouseMoveEvent(self, event: QtGui.QMouseEvent) -> None:
     #     if self.record_flag:
@@ -57,38 +56,39 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
         if (event.key() == QtCore.Qt.Key_1):
             self.print_log('事件1')
             self.drama.TODO1()
-        if (event.key() == QtCore.Qt.Key_2):
+        elif (event.key() == QtCore.Qt.Key_2):
             self.print_log('事件2')
             self.drama.TODO2()
-        if (event.key() == QtCore.Qt.Key_3):
+        elif (event.key() == QtCore.Qt.Key_3):
             self.print_log('事件3')
             self.drama.TODO3()
-        if (event.key() == QtCore.Qt.Key_4):
+        elif (event.key() == QtCore.Qt.Key_4):
             self.print_log('事件4')
             self.drama.TODO4()
-        if (event.key() == QtCore.Qt.Key_5):
+        elif (event.key() == QtCore.Qt.Key_5):
             self.print_log('事件5')
             self.drama.TODO5()
-        if (event.key() == QtCore.Qt.Key_6):
+        elif (event.key() == QtCore.Qt.Key_6):
             self.print_log('事件6')
             self.drama.TODO6()
-        if (event.key() == QtCore.Qt.Key_7):
+        elif (event.key() == QtCore.Qt.Key_7):
             self.print_log('事件7')
             self.drama.TODO7()
-        if (event.key() == QtCore.Qt.Key_8):
+        elif (event.key() == QtCore.Qt.Key_8):
             self.print_log('事件8')
             self.drama.TODO8()
-        if (event.key() == QtCore.Qt.Key_9):
+        elif (event.key() == QtCore.Qt.Key_9):
             self.print_log('事件9')
             self.drama.TODO9()
-        if (event.key() == QtCore.Qt.Key_Control):
+        elif (event.key() == QtCore.Qt.Key_Control):
             self.record_flag=(self.record_flag==False)
             if self.record_flag:
                 print("开启")
             else:
                 print("关闭")
-        if (event.key() == QtCore.Qt.Key_S):
+        elif (event.key() == QtCore.Qt.Key_S):
             recode_bag(txt_list)
+            print('save ok')
     def show_msg(self, msg):
         self.textBrowser_log.insertPlainText(msg)
     def show_msg2(self,msg):
@@ -106,7 +106,7 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
                         x = int(i[:-1].split('#')[0])
                         y = int(i[:-1].split('#')[1])
                         self.label_car.move(x, y)
-                        time.sleep(0.1)
+                        time.sleep(0.05)
                     self.rfid=self.next_rfid
                 else:
                     data=get_node_rfid(self.rfid)
