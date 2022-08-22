@@ -11,7 +11,8 @@ class Server():
         self.shake_data = bytes.fromhex("55 04 56")
         self.main=main
         threading.Thread(target=self.__threading_recv).start()
-        self.__threading_shake()
+        time.sleep(5)
+        threading.Thread(target=self.__threading_shake).start()
 
     def __threading_shake(self):
         while True:
@@ -29,8 +30,8 @@ class Server():
                     self.print_rece([hex(i) for i in data])
                     if hex_list[1]==0:
                         self.main.car_flag=True
-                    if hex_list[1]==1:
-                        rfid=int(hex_list[2])
+                    if hex_list[1]==2:
+                        rfid=int(hex_list[3])
                         self.main.print_log('rfid is '+str(rfid))
                         if self.main.local_path[-1] == rfid:
                             self.main.rfid = rfid
@@ -44,7 +45,6 @@ class Server():
                                     # print(self.main.next_rfid,self.main.rfid)
                                     break
                 else:
-                    self.main.print_log('未知数据')
-                    print([hex(i) for i in data])
+                    self.main.print_log(data.decode())
 if __name__ == '__main__':
     server=Server()

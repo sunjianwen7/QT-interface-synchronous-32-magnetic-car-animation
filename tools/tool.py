@@ -6,15 +6,17 @@ def sengmsg_tostr(msg_list):
     msg_str = ''
     for i in msg_list:
         msg_str += str(i)
-        if str(i) != '0':
+        if str(i) != '0' :
             msg_str += ' '
+    msg_str=msg_str[:-1]
     data = bytes.fromhex(msg_str)
+    print(msg_str)
     print('发送数据',data)
     return data
 def release_port(port):
     "释放指定端口"
     # 查找端口对应的pid
-    cmd_find = 'netstat -antup |grep %s' % port
+    cmd_find = 'lsof -i -P -n |grep %s' % port
     # 返回命令执行结果
     a=os.popen(cmd_find).read()
     result0 = a.split(' ')
@@ -22,12 +24,8 @@ def release_port(port):
     for i in result0:
         if i !='':
             result.append(i)
-    pid=0
-    for i in result:
-        if i =='0.0.0.0:1234':
-            pid=int(result[result.index(i)+3].split('/')[0])
-            break
-    if pid!=0:
+    if result:
+        pid=result[1]
         cmd_kill = 'kill -9 %s' % pid
         os.popen(cmd_kill)
 def recode_bag(data_list):
