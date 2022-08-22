@@ -9,6 +9,7 @@ def sengmsg_tostr(msg_list):
         if str(i) != '0':
             msg_str += ' '
     data = bytes.fromhex(msg_str)
+    print('发送数据',data)
     return data
 def release_port(port):
     "释放指定端口"
@@ -30,7 +31,7 @@ def release_port(port):
         cmd_kill = 'kill -9 %s' % pid
         os.popen(cmd_kill)
 def recode_bag(data_list):
-    txt = open('5to3.txt', mode='w')
+    txt = open('Drama/temp.txt', mode='w')
     txt.writelines(data_list)
     txt.close()
 

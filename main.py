@@ -26,7 +26,7 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
         self.amd=AMD_Map()
         self.drama=Drama(self)
         self.record_flag=False
-        self.car_flag=False
+        self.car_flag=True
         self.rfid=1
         self.local_path=[1]
         self.next_rfid=1
@@ -121,7 +121,7 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
             self.print_log("socket没有握手")
 
     def Path_planning(self, start, end):
-        path = self.amd.Calculate_path(start,end)
+        path,last_node = self.amd.Calculate_path(start,end)
         send_message = [55, 0, 2]
         index = 1
         temp_list=[]
@@ -140,6 +140,14 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
             send_message.append(i[1]['choose'])
             send_message.append(0)
             send_message.append(1)
+        send_message.append(0)
+        send_message.append(index)
+        send_message.append(0)
+        send_message.append(last_node)
+        send_message.append(0)
+        send_message.append(3)
+        send_message.append(0)
+        send_message.append(3)
         send_message.append(56)
         local_path.append(end)
         self.local_path=local_path

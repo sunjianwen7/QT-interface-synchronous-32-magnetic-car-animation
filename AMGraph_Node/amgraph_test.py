@@ -17,8 +17,7 @@ class AMD_Map():
             print(i)
     def Calculate_path(self,node1,node2):
         node_edge, nodes = self.map.ShortestPath(node1,node2)
-        return zip(nodes, node_edge)
-
+        return zip(nodes, node_edge),nodes[-1]
 if __name__ == '__main__':
     amd=AMD_Map()
     amd.Calculate_path(3,5)
