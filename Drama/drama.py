@@ -14,7 +14,7 @@ class Drama():
         self.main.Real_car_go(3,4)
     def TODO5(self):
         while True:
-            if self.red_green_led=="green":
+            if self.main.red_green_led=="green":
                 break
         self.main.Real_car_go(4, 5)
     def TODO6(self):

@@ -24,6 +24,7 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
         super().__init__()
         self.amd=AMD_Map()
         self.drama=Drama(self)
+        self.red_green_led = "green"
         self.record_flag=False
         self.car_flag=False
         self.rfid=1
@@ -104,7 +105,7 @@ class MyWindow(QMainWindow,Ui_MainWindow):  #继承类
                         x = int(i[:-1].split('#')[0])
                         y = int(i[:-1].split('#')[1])
                         self.label_car.move(x, y)
-                        time.sleep(0.05)
+                        time.sleep(0.03)
                     self.rfid=self.next_rfid
                 else:
                     data=get_node_rfid(self.rfid)
