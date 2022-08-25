@@ -1,6 +1,4 @@
-import AMGraph_Node
 from peewee import Model,SmallIntegerField, SqliteDatabase, ForeignKeyField
-
 #数据库路径
 db = SqliteDatabase('AMGraph_Node/test.db')
 # db = SqliteDatabase('test.db')

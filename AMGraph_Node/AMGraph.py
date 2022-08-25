@@ -1,8 +1,4 @@
 import networkx as nx
-import AMGraph_Node
-from AMGraph_Node.model import get_node_rfid
-
-
 class Map():
     def create_graph(self):
         self.map = nx.DiGraph()

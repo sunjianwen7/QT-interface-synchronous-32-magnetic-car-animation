@@ -1,6 +1,5 @@
 from AMGraph_Node.AMGraph import Map
 from AMGraph_Node.model import get_node_datas, get_edge_datas
-import AMGraph_Node
 class AMD_Map():
     def __init__(self):
         map = Map()
