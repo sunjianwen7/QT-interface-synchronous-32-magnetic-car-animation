@@ -1,7 +1,31 @@
 import os
+import datetime
 from functools import reduce
+from loguru import logger
+class Logings:
+    __instance = None
+    # 文件名称，按天创建
+    DATE = datetime.datetime.now().strftime('%Y-%m-%d')
+    # 项目路径下创建log目录保存日志文件
+    logpath = os.path.join(os.getcwd(), "logs")  # 拼接指定路径
+    if not os.path.isdir(logpath):
+        os.makedirs(logpath)
+    logger.add('%s/%s.log' % (logpath, DATE),  # 指定文件
+               format="{time:YYYY-MM-DD HH:mm:ss}  | {level}> {elapsed}  | {message}",
+               encoding='utf-8',
+               retention='1 days',  # 设置历史保留时长
+               backtrace=True,  # 回溯
+               diagnose=True,  # 诊断
+               enqueue=True,  # 异步写入
+               # rotation="5kb",  # 切割，设置文件大小，rotation="12:00"，rotation="1 week"
+               # filter="my_module"  # 过滤模块
+               # compression="zip"   # 文件压缩
+               )
 
-
+    def __new__(cls, *args, **kwargs):
+        if not cls.__instance:
+            cls.__instance = super(Logings, cls).__new__(cls, *args, **kwargs)
+        return cls.__instance
 def sengmsg_tostr(msg_list):
     msg_str = ''
     for i in msg_list:
@@ -10,8 +34,6 @@ def sengmsg_tostr(msg_list):
             msg_str += ' '
     msg_str=msg_str[:-1]
     data = bytes.fromhex(msg_str)
-    print(msg_str)
-    print('发送数据',data)
     return data
 def release_port(port):
     "释放指定端口"
@@ -28,12 +50,6 @@ def release_port(port):
         pid=result[1]
         cmd_kill = 'kill -9 %s' % pid
         os.popen(cmd_kill)
-def recode_bag(data_list):
-    txt = open('Drama/temp.txt', mode='w')
-    txt.writelines(data_list)
-    txt.close()
-
-
 def chars2num(s):
     chars_num = {"0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9}
     return chars_num[s]
@@ -46,5 +62,6 @@ def str2float(s):
     chars = chars.split(".")
     num = reduce(point_left,map(chars2num,chars[0])) + reduce(point_right,list(map(chars2num,chars[1]))[::-1])*0.1
     return num
+logs=Logings()
 if __name__ == '__main__':
     release_port(1234)

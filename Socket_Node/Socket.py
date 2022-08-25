@@ -2,6 +2,8 @@
 import socket
 import threading
 import time
+from loguru import logger
+
 class Socket_Server():
     def __init__(self,port):
         self.data=None
@@ -12,7 +14,7 @@ class Socket_Server():
         socket_.bind((host, port))
         socket_.listen(1)
         self.client_socket, address = socket_.accept()
-        print(str(address) + '连接成功')
+        logger.info(str(address) + '连接成功')
         self.socket_connect=True
         threading.Thread(target=self._heartbeat_threading).start()
         threading.Thread(target=self._reconnection_threading).start()
@@ -27,15 +29,16 @@ class Socket_Server():
     def _reconnection_threading(self):
         while True:
             if not self.socket_connect:
-                print("等待客户端重新连接")
+                logger.info("等待客户端重新连接")
                 self.client_socket, address = self.socket_.accept()
-                print(str(address)+'连接成功')
+                logger.info(str(address)+'连接成功')
                 self.socket_connect = True
 class Car_Server(Socket_Server):
     def __init__(self, port):
         super().__init__(port)
         self.shake_data = bytes.fromhex("55 04 56")
         self.car_flag=False
+        self.rfid=1
         threading.Thread(target=self.__threading_recv).start()
         threading.Thread(target=self.__threading_shake).start()
     def _heartbeat_threading(self):
@@ -50,9 +53,9 @@ class Car_Server(Socket_Server):
     def _reconnection_threading(self):
         while True:
             if not self.socket_connect:
-                print("等待客户端重新连接")
+                logger.info("等待客户端重新连接")
                 self.client_socket, address = self.socket_.accept()
-                print(str(address)+'连接成功')
+                logger.info(str(address)+'连接成功')
                 self.socket_connect = True
                 threading.Thread(target=self.__threading_shake).start()
     def __threading_shake(self):
@@ -66,10 +69,10 @@ class Car_Server(Socket_Server):
             data=self.client_socket.recv(1024)
             if data:
                 hex_list=[i for i in data]
-                print(hex_list)
+                logger.info('车辆接受数据'+str(hex_list))
                 if hex_list[1]==0:
                     self.car_flag=True
-                    print("车辆握手完毕")
+                    logger.info("车辆握手完毕")
                 if hex_list[1]==2:
                     self.rfid=int(hex_list[3])
 class Android_Server(Socket_Server):
@@ -82,9 +85,12 @@ class Android_Server(Socket_Server):
             data=self.client_socket.recv(1024)
             if data:
                 hex_list=[i for i in data]
-                print(hex_list)
+                logger.info('安卓接受数据'+str(hex_list))
                 if hex_list[1]==10:
-                    self.Drama=hex_list[2]
+                    if self.Drama==0:
+                        self.Drama=hex_list[2]
+                    else:
+                        logger.info("场景{}正在执行中".format(self.Drama))
 class OTA_Server(Socket_Server):
     def __init__(self, port):
         super().__init__(port)
@@ -94,7 +100,7 @@ class OTA_Server(Socket_Server):
             data=self.client_socket.recv(1024)
             if data:
                 hex_list=[i for i in data]
-                print(hex_list)
+                logger.info('OTA接受数据'+str(hex_list))
                 if hex_list[1]==1:
                     self.car_flag=True
                 if hex_list[1]==2:

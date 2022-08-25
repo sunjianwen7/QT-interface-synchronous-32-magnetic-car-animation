@@ -1,3 +1,4 @@
+from loguru import logger
 from tools.tool import sengmsg_tostr
 class Drama():
     def __init__(self,car,amd):
@@ -7,9 +8,12 @@ class Drama():
         if self.car.car_flag :
             data=self.__Path_planning(start,end)
             self.car.client_socket.send(data)
-            print("发送数据"+str([hex(i) for i in data]))
+            logger.info("发送数据"+str([hex(i) for i in data]))
+            while True:
+                if self.car.rfid==end:
+                    break
         else:
-            print("socket没有握手")
+            logger.warning("socket没有握手")
     def __Path_planning(self, start, end):
         path,last_node = self.amd.Calculate_path(start,end)
         send_message = [55, 0, 2]
@@ -35,7 +39,6 @@ class Drama():
         send_message.append(0)
         send_message.append(1)
         send_message.append(56)
-
         return sengmsg_tostr(send_message)
     def TODO1(self):
         pass
