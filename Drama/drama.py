@@ -19,12 +19,13 @@ class Drama():
             if self.__android.get_car:
                 self.__android.get_car=False
                 if self.__car.car_flag:
-                    self.__android._client_socket.send(bytes.fromhex("55 0c 01 56"))
-                else:
                     self.__android._client_socket.send(bytes.fromhex("55 0c 00 56"))
+                else:
+                    self.__android._client_socket.send(bytes.fromhex("55 0c 01 56"))
             if self.__android.get_charge:
                 self.__android.get_charge=False
-                self.__android._client_socket.send(bytes.fromhex("55 0b {} 56".format(self.__car._charge)))
+                seng_data="55 0b {} 56".format(str(hex(self.__car._charge))[2:])
+                self.__android._client_socket.send(bytes.fromhex(seng_data))
     def __listen_ota(self):
         while True:
             if self.__listen_ota_flag:
@@ -93,25 +94,31 @@ class Drama():
         pass
     def TODO2(self):
         self.__Real_car_go(1,2)
+        logger.info("事件2结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 02 56"))
     def TODO3(self):
         self.__Real_car_go(2,3)
+        logger.info("事件3结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 03 56"))
         #TODO stop and run
     def TODO4(self):
         self.__Real_car_go(3,4)
+        logger.info("事件4结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 04 56"))
     def TODO5(self):
         # while True:
         #     if self.red_green_led=="green":
         #         break
         self.__Real_car_go(4, 5)
+        logger.info("事件5结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 05 56"))
     def TODO6(self):
         self.__Real_car_go(5, 6)
+        logger.info("事件6结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 06 56"))
     def TODO7(self):
         self.__Real_car_go(6, 1)
+        logger.info("事件7结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 07 56"))
     def TODO8(self):
         pass
