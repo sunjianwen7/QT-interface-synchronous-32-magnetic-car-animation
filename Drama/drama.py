@@ -91,36 +91,35 @@ class Drama():
         send_message.append(56)
         return sengmsg_tostr(send_message)
     def TODO1(self):
-        pass
+        self.__Real_car_go(1, 2)
+        logger.info("事件1结束")
+        self.__android._client_socket.send(bytes.fromhex("55 0a 01 56"))
+        self.__android._client_socket.send(bytes.fromhex("55 0e 01 56"))
     def TODO2(self):
-        self.__Real_car_go(1,2)
+        self.__Real_car_go(2,3)
         logger.info("事件2结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 02 56"))
+        self.__android._client_socket.send(bytes.fromhex("55 0e 02 56"))
     def TODO3(self):
-        self.__Real_car_go(2,3)
+        self.__Real_car_go(3,4)
         logger.info("事件3结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 03 56"))
-        #TODO stop and run
+        self.__android._client_socket.send(bytes.fromhex("55 0e 03 56"))
     def TODO4(self):
-        self.__Real_car_go(3,4)
-        logger.info("事件4结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 04 56"))
-    def TODO5(self):
         # while True:
         #     if self.red_green_led=="green":
         #         break
         self.__Real_car_go(4, 5)
+        logger.info("事件4结束")
+        self.__android._client_socket.send(bytes.fromhex("55 0a 04 56"))
+        self.__android._client_socket.send(bytes.fromhex("55 0e 04 56"))
+    def TODO5(self):
+        self.__Real_car_go(5, 6)
         logger.info("事件5结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 05 56"))
+        self.__android._client_socket.send(bytes.fromhex("55 0e 05 56"))
     def TODO6(self):
-        self.__Real_car_go(5, 6)
+        self.__Real_car_go(6, 1)
         logger.info("事件6结束")
         self.__android._client_socket.send(bytes.fromhex("55 0a 06 56"))
-    def TODO7(self):
-        self.__Real_car_go(6, 1)
-        logger.info("事件7结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 07 56"))
-    def TODO8(self):
-        pass
-    def TODO9(self):
-        pass
+        self.__android._client_socket.send(bytes.fromhex("55 0e 06 56"))
