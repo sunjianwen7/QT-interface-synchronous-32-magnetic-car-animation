@@ -147,12 +147,16 @@ class OTA_Server(Socket_Server):
             except ConnectionResetError:
                 logger.error("ConnectionResetError")
                 data = None
-            if data and data[0] == 85 and data[-1] == 86:
+            if data and data[0] == 85 :
                 hex_list=[i for i in data]
-                logger.info('OTA接受数据'+str(hex_list))
-                if hex_list[1]==0:
-                    self.car_control=hex_list[2]
-                if hex_list[1]==1:
-                    self.led_control=hex_list[2]
+                logger.info('OTA接受数据' + str(hex_list))
+                sum=0
+                for i in hex_list:
+                    sum+=i
+                if sum%256==0:
+                    if hex_list[1]==0:
+                        self.car_control=hex_list[2]
+                    if hex_list[1]==1:
+                        self.led_control=hex_list[2]
 if __name__ == '__main__':
     Car_Server(1234)
