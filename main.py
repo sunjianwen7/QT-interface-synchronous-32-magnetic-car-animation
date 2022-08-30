@@ -43,17 +43,6 @@ class Densified_Sand_Table():
                 logger.info('事件6')
                 self.drama.TODO6()
                 self.android.Drama = 0
-            elif event ==7:
-                logger.info('事件7')
-                self.drama.TODO7()
-                self.android.Drama = 0
-            elif event ==8:
-                logger.info('事件8')
-                self.drama.TODO8()
-                self.android.Drama = 0
-            elif event ==9:
-                logger.info('事件9')
-                self.drama.TODO9()
-                self.android.Drama = 0
+
 if __name__=='__main__':
     Densified_Sand_Table()

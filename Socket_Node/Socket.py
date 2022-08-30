@@ -1,6 +1,6 @@
 # 服务端server
-import logging
 import socket
+import struct
 import threading
 import time
 from loguru import logger
@@ -16,25 +16,32 @@ class Socket_Server():
         socket_.bind((host, port))
         socket_.listen(1)
         self._client_socket, address = socket_.accept()
-        logger.info(str(address) + '连接成功')
+        logger.info(str(address) +self.class_name()+ '连接成功')
         self.socket_connect=True
         threading.Thread(target=self._heartbeat_threading).start()
         threading.Thread(target=self._reconnection_threading).start()
+    @classmethod
+    def class_name(cls):
+        return str(cls.__name__)
     def _heartbeat_threading(self):
         while True:
             if self.socket_connect:
                 try:
                     self._client_socket.send(self._heart_data)
                 except BrokenPipeError :
-                    logger.error("BrokenPipeError")
+                    logger.error(self.class_name()+"BrokenPipeError")
                     self.socket_connect=False
+                except ConnectionResetError:
+                    logger.error(self.class_name() + "ConnectionResetError")
+                    self.socket_connect = False
                 time.sleep(5)
+
     def _reconnection_threading(self):
         while True:
             if not self.socket_connect:
-                logger.info("等待客户端重新连接")
+                logger.info(self.class_name()+"等待客户端重新连接")
                 self._client_socket, address = self.socket_.accept()
-                logger.info(str(address)+'连接成功')
+                logger.info(self.class_name()+str(address)+'重新连接成功')
                 self.socket_connect = True
 class Car_Server(Socket_Server):
     def __init__(self, port):
@@ -72,9 +79,10 @@ class Car_Server(Socket_Server):
     def _reconnection_threading(self):
         while True:
             if not self.socket_connect:
-                logger.info("等待客户端重新连接")
+                logger.info("等待车辆客户端重新连接")
                 self._client_socket, address = self.socket_.accept()
-                logger.info(str(address)+'连接成功')
+
+                logger.info(str(address)+'车辆连接成功')
                 self.socket_connect = True
                 threading.Thread(target=self.__threading_shake).start()
     def __threading_shake(self):
@@ -132,8 +140,6 @@ class Android_Server(Socket_Server):
                     self.get_charge=True
                 if hex_list[1] == 12:
                     self.get_car=True
-
-
 class OTA_Server(Socket_Server):
     def __init__(self, port):
         super().__init__(port)
@@ -158,5 +164,126 @@ class OTA_Server(Socket_Server):
                         self.car_control=hex_list[2]
                     if hex_list[1]==1:
                         self.led_control=hex_list[2]
+class Zhaji_Client():
+    def __init__(self):
+        host = "192.168.0.50"
+        port = 6000
+        self.__socket_= socket.socket()
+        self.__socket_.connect((host, port))
+        self.__traffic_flag=False
+        self.__traffic_led=0
+        self.__msg_head = bytes.fromhex("BB FF 02 ")
+        self.__msg_tail = bytes.fromhex("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 FB")
+    def __zhaji_open(self,zhaji_id):
+        temp = self.__msg_head
+        temp += struct.pack('b', zhaji_id)
+        temp += struct.pack('b',1 )
+        temp += self.__msg_tail
+        self.__socket_.send(temp)
+    def __zhaji_close(self,zhaji_id):
+        temp = self.__msg_head
+        temp += struct.pack('b', zhaji_id)
+        temp += struct.pack('b', 0)
+        temp += self.__msg_tail
+        self.__socket_.send(temp)
+class Led_Client():
+    def __init__(self):
+        host = "192.168.0.50"
+        port = 6000
+        self.__socket_= socket.socket()
+        self.__socket_.connect((host, port))
+        self.__traffic_flag=False
+        self.__traffic_led=0
+        self.__msg_head = bytes.fromhex("BB FF 07 ")
+        self.__msg_tail = bytes.fromhex("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 FB")
+    def __led_open(self,led_id):
+        temp = self.__msg_head
+        temp += struct.pack('b', led_id)
+        temp += struct.pack('b',1 )
+        temp += self.__msg_tail
+        self.__socket_.send(temp)
+    def __led_close(self,led_id):
+        temp = self.__msg_head
+        temp += struct.pack('b', led_id)
+        temp += struct.pack('b', 0)
+        temp += self.__msg_tail
+        self.__socket_.send(temp)
+class Traffic_Client():
+    def __init__(self):
+        host = "192.168.0.50"
+        port = 6000
+        self.__socket_= socket.socket()
+        self.__socket_.connect((host, port))
+        self.__traffic_flag=False
+        self.__traffic_led=0
+        self.__msg_head = bytes.fromhex("BB FF 01 ")
+        self.__msg_tail = bytes.fromhex("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 FB")
+        self.__traffic_group=([1,3],[2,4])
+        threading.Thread(target=self.__threading_set_led).start()
+        threading.Thread(target=self.__threading_listening_led).start()
+    def __send_msg(self, index, color, waittime):
+        temp = self.__msg_head
+        temp += struct.pack('b', index)
+        temp += struct.pack('b', color)
+        temp += struct.pack('b', waittime)
+        temp += self.__msg_tail
+        self.__socket_.send(temp)
+    def __threading_set_led(self):
+        while True:
+            self.__traffic_led = 1
+
+            time.sleep(8)
+            self.__traffic_led = 2
+            time.sleep(2)
+            self.__traffic_led = 3
+            time.sleep(8)
+            self.__traffic_led = 4
+            time.sleep(2)
+    def __set_led_from_group_color(self,group,color):
+        pr_group, pr_color=' ',' '
+        if group==0:
+            pr_group="                           主控制"
+        elif group==1:
+            pr_group = "从控制"
+        if color == 1:
+            pr_color = 'red'
+        elif color == 2:
+            pr_color = 'green'
+        elif color == 3:
+            pr_color = 'yellow'
+        print('{0}设置了{1}'.format(pr_group, pr_color))
+        if color==1:
+            wait_time=10
+        elif color==2:
+            wait_time=8
+        elif color==3:
+            wait_time=2
+        else:
+            wait_time=0
+        for i in self.__traffic_group[group]:
+            self.__send_msg(index=i, color=color, waittime=wait_time)
+            time.sleep(0.2)
+    def __threading_listening_led(self):
+        while True:
+            if self.__traffic_led==0:
+                continue
+            elif self.__traffic_led == 1:
+                self.__traffic_flag=False
+                self.__set_led_from_group_color(0,1)
+                self.__set_led_from_group_color(1,2)
+                self.__traffic_led = 0
+            elif self.__traffic_led == 2:
+                self.__set_led_from_group_color(1,3)
+                self.__traffic_led = 0
+            elif self.__traffic_led == 3:
+                self.__traffic_flag = True
+                self.__set_led_from_group_color(0,2)
+                self.__set_led_from_group_color(1,1)
+                self.__traffic_led = 0
+            elif self.__traffic_led == 4:
+                self.__set_led_from_group_color(0,3)
+                self.__traffic_led=0
+    def get_traffic(self):
+        return self.__traffic_flag
 if __name__ == '__main__':
-    Car_Server(1234)
+    Traffic_Client()
