@@ -35,7 +35,6 @@ class Socket_Server():
                     logger.error(self.class_name() + "ConnectionResetError")
                     self.socket_connect = False
                 time.sleep(5)
-
     def _reconnection_threading(self):
         while True:
             if not self.socket_connect:
@@ -220,7 +219,7 @@ class Traffic_Client():
         self.__msg_tail = bytes.fromhex("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 FB")
         self.__traffic_group=([1,3],[2,4])
         threading.Thread(target=self.__threading_set_led).start()
-        threading.Thread(target=self.__threading_listening_led).start()
+        # threading.Thread(target=self.__threading_listening_led).start()
     def __send_msg(self, index, color, waittime):
         temp = self.__msg_head
         temp += struct.pack('b', index)
