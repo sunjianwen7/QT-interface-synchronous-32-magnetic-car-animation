@@ -1,17 +1,24 @@
 import threading
+import time
 
 from loguru import logger
+
+from Socket_Node.Socket import Traffic_Client
 from tools.tool import sengmsg_tostr
 class Drama():
-    def __init__(self,car,android,ota,amd):
+    def __init__(self,car,android,ota,amd,zhaji):
+        self.event = 0
         self.__car=car
         self.__amd=amd
         self.__ota=ota
         self.__android=android
+        self.__zhaji=zhaji
+        self.__traffic=Traffic_Client()
         self.__listen_ota_flag=False
         self.__listen_android_flag = False
         threading.Thread(target=self.__listen_ota).start()
         threading.Thread(target=self.__listen_android).start()
+        threading.Thread(target=self.__zhaji_led_range).start()
     def __listen_android(self):
         while True:
             if self.__listen_android_flag:
@@ -54,6 +61,24 @@ class Drama():
                 else:
                     logger.error("ota车灯控制数据错误")
                 self.__ota.led_control=-1
+
+    def __zhaji_led_range(self):
+        while True:
+            if self.__car.rfid == 7 and self.event==4:
+                pass
+            if self.__car.rfid == 16 and self.event !=0:
+                print("炸鸡开")
+                self.__zhaji._zhaji_open(1)
+                time.sleep(1.5)
+                self.__zhaji._zhaji_close(1)
+                self.event=0
+            if self.__car.rfid == 1 and self.event == 2:
+                print("轧机开")
+                self.__zhaji._zhaji_open(2)
+                time.sleep(1.5)
+                self.__zhaji._zhaji_close(2)
+                self.event=0
+            #TODO 7触发红绿灯
     def __Real_car_go(self,start,end):
         if self.__car.car_flag :
             data=self.__Path_planning(start,end)
@@ -91,35 +116,33 @@ class Drama():
         send_message.append(56)
         return sengmsg_tostr(send_message)
     def TODO1(self):
-        self.__Real_car_go(1, 2)
-        logger.info("事件1结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 01 56"))
+        self.__Real_car_go(6, 1)
+        logger.info("到达点1")
         self.__android._client_socket.send(bytes.fromhex("55 0e 01 56"))
     def TODO2(self):
-        self.__Real_car_go(2,3)
-        logger.info("事件2结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 02 56"))
+        self.__Real_car_go(1,2)
+        logger.info("到达点2")
         self.__android._client_socket.send(bytes.fromhex("55 0e 02 56"))
     def TODO3(self):
-        self.__Real_car_go(3,4)
-        logger.info("事件3结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 03 56"))
+        self.__Real_car_go(2,3)
+        logger.info("到达点3")
         self.__android._client_socket.send(bytes.fromhex("55 0e 03 56"))
     def TODO4(self):
-        # while True:
-        #     if self.red_green_led=="green":
-        #         break
-        self.__Real_car_go(4, 5)
-        logger.info("事件4结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 04 56"))
+        self.__Real_car_go(3, 8)
+        while True:
+            if self.__traffic.get_traffic():
+                break
+        self.__Real_car_go(8, 4)
+        logger.info("到达点4")
         self.__android._client_socket.send(bytes.fromhex("55 0e 04 56"))
     def TODO5(self):
-        self.__Real_car_go(5, 6)
-        logger.info("事件5结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 05 56"))
+
+        self.__Real_car_go(4, 9)
+        time.sleep(2)
+        self.__Real_car_go(9, 5)
+        logger.info("到达点5")
         self.__android._client_socket.send(bytes.fromhex("55 0e 05 56"))
     def TODO6(self):
-        self.__Real_car_go(6, 1)
-        logger.info("事件6结束")
-        self.__android._client_socket.send(bytes.fromhex("55 0a 06 56"))
+        self.__Real_car_go(5, 6)
+        logger.info("到达点6")
         self.__android._client_socket.send(bytes.fromhex("55 0e 06 56"))
